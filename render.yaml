@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: lexia
+    env: rust
+    buildCommand: cargo build --release
+    startCommand: ./target/release/lexia serve
+    plan: free # Usa el plan gratuito de Render
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false # Le pedirá al usuario pegar su API Key de forma segura en el dashboard de Render

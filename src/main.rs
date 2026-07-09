@@ -71,7 +71,12 @@ async fn main() {
     match cli.command {
         Command::Serve { port } => {
             validate_api_key();
-            server::run(port).await;
+            // Si Render nos pasa la variable PORT, la priorizamos
+            let final_port = std::env::var("PORT")
+                .ok()
+                .and_then(|val| val.parse::<u16>().ok())
+                .unwrap_or(port);
+            server::run(final_port).await;
         }
 
         Command::Resumen { archivo, idioma, largo } => {
