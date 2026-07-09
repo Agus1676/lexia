@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexia — Análisis de documentos con IA</title>
+    <meta name="description" content="Subí un PDF o TXT y obtené un resumen o puntos clave estructurados por inteligencia artificial.">
+    
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Forzamos la descarga del CSS renombrándolo o versionándolo -->
+    <link rel="stylesheet" href="design.css?v=4">
+</head>
+<body>
+
+    <!-- Canvas para el fondo interactivo de partículas en 3D (Google Antigravity style) -->
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="container">
+
+        <!-- Header -->
+        <header class="navbar">
+            <a class="nav-brand" href="#" onclick="resetToMain(); return false;">
+                <svg class="brand-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5V15a2 2 0 0 1 2-2h14v8H6.5a2.5 2.5 0 0 1-2.5-2.5z"/>
+                    <path d="M6 2h14v11H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+                </svg>
+                <span>LEX<span style="color: var(--accent);">IA</span></span>
+            </a>
+            <div class="nav-meta">
+                <span class="engine-tag">
+                    <span class="engine-dot"></span>
+                    Gemini API
+                </span>
+            </div>
+        </header>
+
+        <!-- ── VISTA PRINCIPAL (MAIN) ────────────────────────── -->
+        <main class="view" id="view-main">
+
+            <div class="hero-section">
+                <h1 class="title">Análisis de documentos</h1>
+                <p class="subtitle">Subí un archivo. Lexia extrae el contenido clave de forma estructurada.</p>
+            </div>
+
+            <div class="card">
+                
+                <!-- Ajustes / Configuración -->
+                <div class="settings-grid">
+                    <div class="input-group">
+                        <label class="input-label">Tipo de Análisis</label>
+                        <div class="segmented-control" id="mode-toggle">
+                            <button class="seg-btn active" data-value="resumen">Resumen</button>
+                            <button class="seg-btn" data-value="puntos-clave">Puntos Clave</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group" id="largo-group">
+                        <label class="input-label">Extensión</label>
+                        <div class="segmented-control" id="largo-toggle">
+                            <button class="seg-btn active" data-value="false">Corto</button>
+                            <button class="seg-btn" data-value="true">Detallado</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label" for="idioma-select">Idioma</label>
+                        <select class="custom-select" id="idioma-select">
+                            <option value="español">Español</option>
+                            <option value="inglés">Inglés</option>
+                            <option value="portugués">Portugués</option>
+                            <option value="francés">Francés</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Dropzone de Archivo -->
+                <div class="dropzone" id="dropzone">
+                    <input type="file" id="file-input" accept=".pdf,.txt,.md" hidden>
+
+                    <div class="dz-idle" id="dropzone-empty">
+                        <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p class="dz-text">Arrastrá tu documento aquí o <span class="dz-link">buscá en tu equipo</span></p>
+                        <p class="dz-subtext">PDF, TXT o MD</p>
+                    </div>
+
+                    <div class="dz-file hidden" id="dropzone-selected">
+                        <div class="file-card">
+                            <div class="file-icon-box" id="file-thumb">PDF</div>
+                            <div class="file-info">
+                                <span class="file-name" id="file-name">document.pdf</span>
+                                <span class="file-size" id="file-size">0 KB</span>
+                            </div>
+                            <button class="btn-remove" id="file-remove" aria-label="Remover">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón de Envío -->
+                <button class="btn-action-primary" id="btn-process" disabled>
+                    Procesar Archivo
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </button>
+
+            </div>
+        </main>
+
+        <!-- ── VISTA DE CARGA (LOADING) ──────────────────────── -->
+        <div class="view hidden" id="view-loading">
+            <div class="loading-container">
+                <div class="loading-bar">
+                    <div class="loading-bar-fill"></div>
+                </div>
+                <p class="loading-text">Generando análisis...</p>
+            </div>
+        </div>
+
+        <!-- ── VISTA DE RESULTADOS ───────────────────────────── -->
+        <div class="view hidden" id="view-result">
+
+            <div class="result-topbar">
+                <button class="btn-secondary" id="btn-new">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"/>
+                        <polyline points="12 19 5 12 12 5"/>
+                    </svg>
+                    Nuevo Análisis
+                </button>
+                <div class="action-buttons">
+                    <button class="btn-secondary" id="btn-copy">Copiar Texto</button>
+                    <button class="btn-primary-small" id="btn-download">Guardar PDF</button>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-card-header">
+                    <span class="result-mode-pill" id="result-label">Resumen</span>
+                    <span class="result-filename" id="result-filename">documento.pdf</span>
+                    <div class="result-stats">
+                        <span class="stat-badge" id="stat-chars">0 chars</span>
+                        <span class="stat-badge" id="meta-mode">Resumen</span>
+                    </div>
+                </div>
+                <div class="card-rule"></div>
+                <div class="result-body" id="result-content"></div>
+            </div>
+
+        </div>
+
+        <!-- ── VISTA DE ERROR ────────────────────────────────── -->
+        <div class="view hidden" id="view-error">
+            <div class="error-container">
+                <div class="error-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+                <h3 class="error-title">No se pudo completar el análisis</h3>
+                <p class="error-description" id="error-message">Error del sistema.</p>
+                <button class="btn-action-primary" id="btn-retry" style="margin-top: 10px;">Intentar de Nuevo</button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            Desarrollado por <span class="author-name">Agustín Pollán</span>
+        </footer>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

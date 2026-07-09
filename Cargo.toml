@@ -1,0 +1,44 @@
+[package]
+name        = "lexia"
+version     = "0.1.0"
+edition     = "2021"
+authors     = ["Agustín Pollán"]
+description = "Lector inteligente de documentos con IA — PDF y TXT usando Gemini"
+
+[[bin]]
+name = "lexia"
+path = "src/main.rs"
+
+[dependencies]
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# HTTP client (para la API de Gemini)
+reqwest = { version = "0.12", features = ["json"] }
+
+# Serialización JSON
+serde      = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Extracción de texto desde PDF
+pdf-extract = "0.7"
+
+# Variables de entorno desde .env
+dotenvy = "0.15"
+
+# Colores en terminal
+colored = "2"
+
+# Spinner de carga en terminal
+indicatif = "0.17"
+
+# Servidor web
+axum      = { version = "0.7", features = ["multipart"] }
+tower-http = { version = "0.5", features = ["fs", "cors"] }
+tower     = "0.4"
+
+# Manejo de errores
+anyhow = "1"

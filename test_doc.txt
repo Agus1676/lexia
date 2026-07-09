@@ -1,0 +1,5 @@
+Lexia es una aplicacion web y herramienta de linea de comandos programada en Rust que permite realizar analisis inteligentes de documentos PDF, TXT y MD usando la API de inteligencia artificial de Google Gemini 2.5 Flash.
+La aplicacion web utiliza un servidor construido en Axum que sirve un frontend minimalista y moderno escrito en HTML5, CSS y Javascript Vanilla.
+El frontend tiene un canvas interactivo tridimensional con un universo de estrellas rojas orbitando constantemente y reaccionando elasticamente al paso del cursor, simulando un efecto de gravedad cero y antigravedad.
+Tambien permite descargar los resultados procesados directamente en formato PDF generado del lado del cliente.
+Desarrollado en su totalidad por Agustin Pollan en julio de 2026.
