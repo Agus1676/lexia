@@ -4,6 +4,21 @@ Servidor web y cliente de línea de comandos en Rust para procesar, resumir y ex
 
 El proyecto incluye un frontend minimalista en HTML y CSS vainilla con un canvas interactivo en 3D que implementa un universo de partículas que reacciona a la posición del cursor de forma elástica, simulando gravedad cero y repulsión física.
 
+## Tecnologías Utilizadas
+
+### Backend (Rust)
+*   **Axum:** Framework web asíncrono para estructurar los endpoints HTTP de la API y servir los recursos estáticos.
+*   **Tokio:** Runtime asíncrono multiproceso para la gestión del servidor.
+*   **reqwest & serde:** Integración y cliente HTTP para consumir la API JSON de Google Gemini, con serialización/deserialización estricta de tipos de datos.
+*   **pdf-extract:** Biblioteca nativa para la extracción y parseo del flujo de texto de documentos PDF directamente en memoria.
+*   **dotenv:** Carga dinámica de variables de entorno locales para la protección de credenciales.
+
+### Frontend
+*   **JavaScript (Vanilla ES6):** Lógica asíncrona para la gestión de formularios multipart, arrastre de archivos (Drag & Drop), animaciones y llamadas a la API mediante `Fetch`.
+*   **Canvas 2D / WebGL Math:** Motor de partículas programado desde cero con matrices trigonométricas de rotación 3D e interactividad elástica.
+*   **Vanilla CSS:** Diseño web adaptivo (responsive) basado en variables nativas, desenfoque de fondo (`backdrop-filter`) y transiciones fluidas.
+*   **jsPDF:** Generador y formateador de documentos PDF en el lado del cliente para exportar los análisis sin sobrecargar el servidor.
+
 ## Características
 
 *   **Extracción en memoria:** Parseo de texto directo de archivos PDF (mediante `pdf-extract`) y archivos de texto plano sin almacenar datos temporales en disco.
